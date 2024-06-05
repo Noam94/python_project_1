@@ -1,4 +1,5 @@
 import requests
+import streamlit as st
 
 my_api = '47d8441287d3c3d5fe39e3668e7e78c3'
 city = input("Please write a city name: ")
@@ -16,4 +17,4 @@ Temprature: {weather_data['main']['temp']} degrees
 Humidity: {weather_data['main']['humidity']} %
 '''
 
-print(weather_string)
+st.write(weather_string)
