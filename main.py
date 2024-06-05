@@ -5,8 +5,8 @@ import pytz as tz
 
 st.title('Welcome to the weather app!')
 
-st.text(dt.datetime.now().strftime('''
-%A, %d %B %Y
+st.write(dt.datetime.now().strftime('''
+%A, %d %B %Y\n
 %I:%M %p
 '''))
 
@@ -18,21 +18,20 @@ show_time = st.checkbox("Local time")
 
 if city != '':
   if weather_data['cod'] == 200:
-    weather_string = f'''
-    {weather_data['weather'][0]['description']}
-    Temperature: {weather_data['main']['temp']} degrees
-    Humidity: {weather_data['main']['humidity']} %
-    '''
     st.header(city.capitalize())
     st.subheader('Weather description')
-    st.text(weather_string)
+    st.write((f'''
+      {weather_data['weather'][0]['description']}\n
+      Temperature: {weather_data['main']['temp']} degrees\n
+      Humidity: {weather_data['main']['humidity']} %
+      '''))
     if show_time:
       city_tz = [s for s in tz.all_timezones if city.title().replace(' ', '_') in s]
       tz_obj = tz.timezone(city_tz[0])
       st.subheader('Date and Time')
-      st.text(dt.datetime.now(tz_obj).strftime('''
-      %A, %d %B %Y 
-      %I:%M %p}
+      st.write(dt.datetime.now(tz_obj).strftime('''
+      %A, %d %B %Y\n
+      %I:%M %p
       '''))
   else:
     st.write(weather_data['message'])
