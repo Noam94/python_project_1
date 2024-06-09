@@ -26,10 +26,9 @@ if city != '':
       Humidity: {weather_data['main']['humidity']} %
       '''))
     if show_time:
-      city_tz = [s for s in tz.all_timezones if city.title().replace(' ', '_') in s]
-      tz_obj = tz.timezone(city_tz[0])
+      offset = weather_data['timezone'] / (60 * 60)
       st.subheader('Date and Time')
-      st.write(dt.datetime.now(tz_obj).strftime('''
+      st.write(dt.datetime.now(dt.timezone(dt.timedelta(hours=offset))).strftime('''
       %A, %d %B %Y\n
       %I:%M %p
       '''))
