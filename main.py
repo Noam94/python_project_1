@@ -11,17 +11,29 @@ st.write(dt.datetime.now().strftime('''
 %I:%M %p
 '''))
 
+# read settings:
+location = {}
+with open('settings.json', 'r') as f:
+  settings = (json.load(f))
+  location["default"] = settings.setdefault("default", [])
+  location["favorites"] = settings.setdefault("favorites", [])
+
+# set default locations:
 default_loc_input = st.text_input("Would you like to set a default location?")
 if default_loc_input != '' and st.button("Set default"):
-  location_dict = {"default": default_loc_input}
+  location["default"] = default_loc_input.capitalize()
   with open('settings.json','w') as f:
-    json.dump(location_dict,f)
+    json.dump(location,f)
 
-with open('settings.json', 'r') as f:
-  default_loc = (json.load(f)["default"])
+# set favorites:
+favorites_loc_input = st.text_input("Add favorite locations:")
+if favorites_loc_input != '' and st.button("Add"):
+  location["favorites"].append(favorites_loc_input.capitalize())
+  with open('settings.json','w') as f:
+    json.dump(location,f)
 
 
-def get_weather(weather_data, city=default_loc):
+def get_weather(weather_data, city=location["default"]):
   st.header(city.capitalize())
   st.subheader('Weather description')
   st.write((f'''
@@ -39,13 +51,18 @@ def get_timezone(offset):
         %I:%M %p
         '''))
 
+check_favorites = st.checkbox("Choose from favorite")
+if check_favorites:
+  city = st.selectbox("Choose from favorites", location["favorites"], index=None, placeholder="Select location...")
+else:
+  city = st.text_input("Where would you like to know the weather in?")
 
-city = st.text_input("Where would you like to know the weather in?")
 weather_data = rs.get(f"https://api.openweathermap.org/data/2.5/weather?q={city}&units=metric&appid={my_api}").json()
 
-show_time = st.checkbox("Local time")
+show_time = st.toggle("Local time")
 
-if city != '':
+if city != '' or (city is not None and check_favorites):
+  st.write(city)
   if weather_data['cod'] == 200:
     get_weather(weather_data, city)
     if show_time:
@@ -53,5 +70,6 @@ if city != '':
   else:
     st.write(weather_data['message'])
 else:
+  default_loc = location["default"]
   weather_data = rs.get(f"https://api.openweathermap.org/data/2.5/weather?q={default_loc}&units=metric&appid={my_api}").json()
   get_weather(weather_data)
