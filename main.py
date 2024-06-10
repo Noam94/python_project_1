@@ -11,12 +11,35 @@ st.write(dt.datetime.now().strftime('''
 %I:%M %p
 '''))
 
-# read settings:
 location = {}
-with open('settings.json', 'r') as f:
-  settings = (json.load(f))
-  location["default"] = settings.setdefault("default", [])
-  location["favorites"] = settings.setdefault("favorites", [])
+
+# if st.checkbox("Is this your first time?"):
+#   default_loc_input = st.text_input("Would you like to set a default location?")
+#   favorites_loc_input = st.text_input("Add favorite locations:")
+#   with open('settings.json', 'w') as f:
+#     if default_loc_input != '' and st.button("Set default"):
+#       location["default"] = default_loc_input.capitalize()
+#     if favorites_loc_input != '' and st.button("Add"):
+#       if favorites_loc_input.capitalize() not in location["favorites"]:
+#         location["favorites"].append(favorites_loc_input.capitalize())
+#   with open('settings.json', 'w') as f:
+#       json.dump(location, f)
+
+# read settings:
+
+try:
+  with open('settings.json', 'r+') as f:
+    try:
+      settings = (json.load(f))
+      location["default"] = settings.setdefault("default", [])
+      location["favorites"] = settings.setdefault("favorites", [])
+    except:
+      location["default"] = []
+      location["favorites"] = []
+except FileNotFoundError:
+  with open('settings.json', 'w+') as f:
+    location["default"] = []
+    location["favorites"] = []
 
 # set default locations:
 default_loc_input = st.text_input("Would you like to set a default location?")
@@ -69,7 +92,7 @@ if (city != '' and not check_favorites) or (city is not None and check_favorites
       get_timezone(weather_data['timezone'] / (60 * 60))
   else:
     st.write(weather_data['message'])
-else:
+elif len(location["default"]) >= 1:
   default_loc = location["default"]
   weather_data = rs.get(f"https://api.openweathermap.org/data/2.5/weather?q={default_loc}&units=metric&appid={my_api}").json()
   get_weather(weather_data)
