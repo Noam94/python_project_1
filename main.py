@@ -28,9 +28,10 @@ if default_loc_input != '' and st.button("Set default"):
 # set favorites:
 favorites_loc_input = st.text_input("Add favorite locations:")
 if favorites_loc_input != '' and st.button("Add"):
-  location["favorites"].append(favorites_loc_input.capitalize())
-  with open('settings.json','w') as f:
-    json.dump(location,f)
+  if favorites_loc_input.capitalize() not in location["favorites"]:
+    location["favorites"].append(favorites_loc_input.capitalize())
+    with open('settings.json','w') as f:
+      json.dump(location,f)
 
 
 def get_weather(weather_data, city=location["default"]):
@@ -61,8 +62,7 @@ weather_data = rs.get(f"https://api.openweathermap.org/data/2.5/weather?q={city}
 
 show_time = st.toggle("Local time")
 
-if city != '' or (city is not None and check_favorites):
-  st.write(city)
+if (city != '' and not check_favorites) or (city is not None and check_favorites):
   if weather_data['cod'] == 200:
     get_weather(weather_data, city)
     if show_time:
