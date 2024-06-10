@@ -6,7 +6,7 @@ import json
 st.title('Welcome to the weather app!')
 my_api = '47d8441287d3c3d5fe39e3668e7e78c3'
 
-st.write(dt.datetime.now(dt.timezone(dt.timedelta(hours=+2))).strftime('''
+st.write(dt.datetime.now(dt.timezone(dt.timedelta(hours=+3))).strftime('''
 %A, %d %B %Y\n
 %I:%M %p
 '''))
