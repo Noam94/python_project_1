@@ -13,20 +13,6 @@ st.write(dt.datetime.now().strftime('''
 
 location = {}
 
-# if st.checkbox("Is this your first time?"):
-#   default_loc_input = st.text_input("Would you like to set a default location?")
-#   favorites_loc_input = st.text_input("Add favorite locations:")
-#   with open('settings.json', 'w') as f:
-#     if default_loc_input != '' and st.button("Set default"):
-#       location["default"] = default_loc_input.capitalize()
-#     if favorites_loc_input != '' and st.button("Add"):
-#       if favorites_loc_input.capitalize() not in location["favorites"]:
-#         location["favorites"].append(favorites_loc_input.capitalize())
-#   with open('settings.json', 'w') as f:
-#       json.dump(location, f)
-
-# read settings:
-
 try:
   with open('settings.json', 'r+') as f:
     try:
@@ -75,13 +61,18 @@ def get_timezone(offset):
         %I:%M %p
         '''))
 
-check_favorites = st.checkbox("Choose from favorite")
-if check_favorites:
-  city = st.selectbox("Choose from favorites", location["favorites"], index=None, placeholder="Select location...")
+if len(location["favorites"]) > 0:
+  check_favorites = st.checkbox("Choose from favorite")
+  if check_favorites:
+    city = st.selectbox("Choose from favorites", location["favorites"], index=None, placeholder="Select location...")
+  else:
+    city = st.text_input("Where would you like to know the weather in?")
 else:
   city = st.text_input("Where would you like to know the weather in?")
+  check_favorites = False
 
 weather_data = rs.get(f"https://api.openweathermap.org/data/2.5/weather?q={city}&units=metric&appid={my_api}").json()
+
 
 show_time = st.toggle("Local time")
 
